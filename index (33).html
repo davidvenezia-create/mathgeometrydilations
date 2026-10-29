@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Dilation Station</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='20,80 40,80 20,55' fill='%231F5FAD'/%3E%3Cpolygon points='20,80 80,80 20,10' fill='none' stroke='%23E07020' stroke-width='8'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#1F5FAD;--blue-bg:#E8F0FA;--orange:#E07020;--orange-bg:#FDF0E4;--navy:#16324F;--green:#2E8B57;--green-bg:#E7F4EC;--red:#B03030;--red-bg:#FBEAEA;--ink:#1E2433;--muted:#5A6270;--line:#D5DCE5;--bg:#F5F7FA;--card:#FFFFFF;--gridline:#E3E8EF;--axis:#333A45}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--blue:#6EA6EE;--blue-bg:#1B2A40;--orange:#F59A55;--orange-bg:#3A2614;--navy:#CFE0F5;--green:#5CC28A;--green-bg:#14301F;--red:#F07A7A;--red-bg:#3A1818;--ink:#E7EBF0;--muted:#A3ACB8;--line:#34404F;--bg:#11161D;--card:#1A2029;--gridline:#2A333F;--axis:#C9D1DB}}
+:root[data-theme="dark"]{--blue:#6EA6EE;--blue-bg:#1B2A40;--orange:#F59A55;--orange-bg:#3A2614;--navy:#CFE0F5;--green:#5CC28A;--green-bg:#14301F;--red:#F07A7A;--red-bg:#3A1818;--ink:#E7EBF0;--muted:#A3ACB8;--line:#34404F;--bg:#11161D;--card:#1A2029;--gridline:#2A333F;--axis:#C9D1DB}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Arial,sans-serif;font-size:17px;line-height:1.45}
+.wrap{max-width:1040px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:28px;color:var(--navy)}
+.sub{margin:2px 0 0;color:var(--muted)}
+.lang{display:flex;gap:6px}
+.lang button,.tabs button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
+.lang button[aria-pressed="true"],.tabs button[aria-selected="true"]{background:var(--navy);color:var(--card);border-color:var(--navy)}
+.idbar{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+.idbar input{font:inherit;padding:6px 10px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.idbar #name{width:190px}.idbar #period{width:80px}
+.stars{margin-left:auto;font-weight:700;color:var(--orange)}
+.linkbtn{background:none;border:none;color:var(--blue);text-decoration:underline;font:inherit;cursor:pointer;padding:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+h2{margin:0 0 6px;color:var(--navy);font-size:22px}
+.help{margin:0 0 12px;color:var(--muted)}
+svg.plane{width:100%;max-width:480px;height:auto;display:block;margin:0 auto;touch-action:manipulation}
+.plane text{font-family:inherit}
+.slider{display:flex;align-items:center;gap:12px;margin:10px 0}
+.slider input{flex:1;accent-color:var(--orange)}
+.kval{font-size:30px;font-weight:700;color:var(--orange);min-width:110px}
+.pill{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:700}
+.pill.enl{background:var(--orange-bg);color:var(--orange)}.pill.red{background:var(--blue-bg);color:var(--blue)}.pill.same{background:var(--bg);color:var(--muted)}
+table.coords{width:100%;border-collapse:collapse;margin-top:10px}
+table.coords th,table.coords td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+table.coords th{background:var(--navy);color:var(--card)}
+td.pre{color:var(--blue);font-weight:700}td.img{color:var(--orange);font-weight:700}
+.shapes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.shapes button,.btn{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 14px;font:inherit;cursor:pointer}
+.shapes button[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-bg);color:var(--blue);font-weight:700}
+.btn.primary{background:var(--navy);color:var(--card);border-color:var(--navy);font-weight:700}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.rulebox{background:var(--navy);color:var(--card);border-radius:14px;padding:16px;text-align:center}
+.rulebox .big{font-size:34px;font-weight:700}
+.rulebox .small{color:#F6C344;font-weight:700}
+.kcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+@media (max-width:560px){.kcards{grid-template-columns:1fr}}
+.kc{border-radius:12px;padding:12px;text-align:center;border:2px solid}
+.kc b{display:block;font-size:24px}
+.kc.o{background:var(--orange-bg);border-color:var(--orange);color:var(--orange)}
+.kc.b{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+.kc.g{background:var(--bg);border-color:var(--line);color:var(--muted)}
+.kc span{color:var(--ink);display:block;font-size:15px}
+.try{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.try input{width:64px;font:inherit;padding:5px 8px;border:2px solid var(--line);border-radius:8px;text-align:center;background:var(--bg);color:var(--ink)}
+.fb{min-height:1.5em;margin-top:8px;font-weight:700}
+.fb.ok{color:var(--green)}.fb.no{color:var(--red)}
+.q{font-size:19px;font-weight:700;margin:6px 0 10px}
+.progress{color:var(--muted);font-size:15px}
+.opts{display:grid;gap:8px;margin:12px 0}
+.opts button{text-align:left;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 14px;font:inherit;cursor:pointer}
+.opts button.right{border-color:var(--green);background:var(--green-bg)}
+.opts button.wrong{border-color:var(--red);background:var(--red-bg)}
+.why{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:6px}
+.done{text-align:center;padding:20px}
+.done .big{font-size:40px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:var(--card);padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .3s;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.notice textarea{width:100%;min-height:70px;font:inherit;padding:8px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1 data-t="title"></h1><p class="sub" data-t="sub"></p></div>
+  <div class="lang" role="group" aria-label="Language">
+    <button id="lang-en" aria-pressed="true">English</button>
+    <button id="lang-es" aria-pressed="false">Español</button>
+  </div>
+</header>
+
+<div class="idbar">
+  <label><span data-t="name"></span> <input id="name" autocomplete="off"></label>
+  <label><span data-t="period"></span> <input id="period" autocomplete="off"></label>
+  <button class="linkbtn" id="newStudent" data-t="newStudent"></button>
+  <span class="stars">⭐ <span data-t="stars"></span>: <span id="starCount">0</span></span>
+</div>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="explore" aria-selected="true" data-t="tabExplore"></button>
+  <button role="tab" data-tab="rules" aria-selected="false" data-t="tabRules"></button>
+  <button role="tab" data-tab="predict" aria-selected="false" data-t="tabPredict"></button>
+  <button role="tab" data-tab="real" aria-selected="false" data-t="tabReal"></button>
+</nav>
+
+<!-- EXPLORE -->
+<section id="explore" class="card">
+  <div class="grid2">
+    <div>
+      <svg id="exPlane" class="plane" viewBox="0 0 480 480" aria-label="coordinate plane"></svg>
+      <div class="legend"><span><i style="background:var(--blue)"></i><span data-t="legendPre"></span></span><span><i style="background:var(--orange)"></i><span data-t="legendImg"></span></span><span><i style="border:2px dashed var(--muted)"></i><span data-t="legendRay"></span></span></div>
+    </div>
+    <div>
+      <h2 data-t="exTitle"></h2>
+      <p class="help" data-t="exHelp"></p>
+      <div class="shapes" id="shapeBtns"></div>
+      <div class="slider">
+        <span class="kval">k = <span id="kOut">2</span></span>
+        <input type="range" id="kRange" min="0" max="11" step="1" value="6" aria-label="scale factor">
+      </div>
+      <div><span id="kType" class="pill enl"></span></div>
+      <table class="coords"><thead><tr><th data-t="thPre"></th><th data-t="thRule"></th><th data-t="thImg"></th></tr></thead><tbody id="exTable"></tbody></table>
+      <p class="help" id="sideRatio" style="margin-top:10px"></p>
+      <div class="notice">
+        <label for="noticeTxt"><b data-t="noticeQ"></b></label>
+        <textarea id="noticeTxt"></textarea>
+        <p class="help" data-t="noticeFrame"></p>
+        <button class="btn primary" id="noticeSend" data-t="send"></button>
+        <div class="fb" id="noticeFb"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RULES -->
+<section id="rules" class="card" hidden>
+  <h2 data-t="ruTitle"></h2>
+  <p class="help" data-t="ruHelp"></p>
+  <div class="rulebox"><div class="big">(x, y) → (kx, ky)</div><div class="small" data-t="ruMult"></div></div>
+  <div class="kcards">
+    <div class="kc o"><b>k &gt; 1</b><span data-t="enl"></span></div>
+    <div class="kc b"><b>0 &lt; k &lt; 1</b><span data-t="red"></span></div>
+    <div class="kc g"><b>k = 1</b><span data-t="same"></span></div>
+  </div>
+  <p class="help" data-t="ruOrigin"></p>
+  <h2 style="margin-top:14px" data-t="tryIt"></h2>
+  <div id="tryList"></div>
+</section>
+
+<!-- PREDICT -->
+<section id="predict" class="card" hidden>
+  <div class="grid2">
+    <div><svg id="prPlane" class="plane" viewBox="0 0 480 480" aria-label="coordinate plane"></svg></div>
+    <div id="prPanel">
+      <h2 data-t="prTitle"></h2>
+      <p class="progress" id="prProg"></p>
+      <p class="q" id="prQ"></p>
+      <p class="help" id="prPick" data-t="prClick"></p>
+      <button class="btn primary" id="prCheck" data-t="check"></button>
+      <button class="btn" id="prNext" data-t="next" hidden></button>
+      <div class="fb" id="prFb"></div>
+    </div>
+  </div>
+</section>
+
+<!-- REAL LIFE -->
+<section id="real" class="card" hidden>
+  <h2 data-t="reTitle"></h2>
+  <p class="help" data-t="reHelp"></p>
+  <div id="rePanel"></div>
+</section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ---------- Classroom Logger ---------- */
+const LOGGER_URL="https://script.google.com/macros/s/AKfycbwV7Hd_JRL54Xbxm2tiAFx3kWm_WFO5nxSotzCD0PiAuEYtx4Z3AlTQ3UwwJYrsOKS6/exec";
+const APP="dilation-station";
+const ID={name:"",period:""};
+try{ID.name=localStorage.getItem("dil_student")||"";ID.period=localStorage.getItem("dil_period")||"";}catch(e){}
+let nudged=false;
+function wc(t){t=String(t||"").trim();return t?t.split(/\s+/).length:0}
+function log(event,o){
+  o=o||{};
+  if(!ID.name.trim()){if(!nudged){nudged=true;toast(T("nudge"));}return;}
+  const text=o.text==null?"":String(o.text).slice(0,1500);
+  const payload={app:APP,student:ID.name.trim(),period:ID.period.trim()||"unknown",event,section:o.section||"",station:o.section||"",item:o.item==null?"":o.item,stageIndex:o.item==null?"":o.item,correct:o.correct==null?"":o.correct,stars:o.stars==null?"":o.stars,text,wordCount:o.wc==null?(text?wc(text):""):o.wc,lang:LANG,ts:new Date().toISOString()};
+  try{fetch(LOGGER_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload),keepalive:true}).catch(()=>{});}catch(e){}
+}
+function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("show"),3200);}
+
+/* ---------- Language ---------- */
+const STR={
+en:{
+ title:"Dilation Station",sub:"Grow it. Shrink it. Find the scale factor.",
+ name:"Your name",period:"Period",newStudent:"New student",stars:"Stars",
+ nudge:"Type your name at the top so your teacher can see your work.",
+ tabExplore:"Explore",tabRules:"Rules",tabPredict:"Predict",tabReal:"Real life",
+ legendPre:"pre-image",legendImg:"image",legendRay:"lines from the center (0, 0)",
+ exTitle:"Change the scale factor",exHelp:"Pick a shape. Move the slider to change k. Watch the orange image grow and shrink from the center (0, 0).",
+ shTri:"Triangle",shRect:"Rectangle",shTrap:"Trapezoid",
+ thPre:"Pre-image",thRule:"× k",thImg:"Image",
+ enlTag:"Enlargement: k > 1",redTag:"Reduction: 0 < k < 1",sameTag:"Same size: k = 1",
+ ratio:"Bottom side: pre-image {a} units, image {b} units. {b} ÷ {a} = {k}",
+ noticeQ:"What do you notice?",noticeFrame:"Try: “When k is ____, the image is ____. The shape stays ____.”",send:"Send",sent:"Sent! Nice thinking.",writeFirst:"Write a sentence first.",
+ ruTitle:"The dilation rule",ruHelp:"When no center is given, the center of dilation is the origin (0, 0).",
+ ruMult:"Multiply x by k AND multiply y by k.",enl:"Enlargement: the image is bigger.",red:"Reduction: the image is smaller.",same:"Same size: nothing changes.",
+ ruOrigin:"Remember: translations ADD. Dilations MULTIPLY.",
+ tryIt:"Try it",tryQ:"Dilate {p} by k = {k}.",check:"Check",ok:"Correct!",no:"Not yet. Multiply both numbers by {k}.",
+ prTitle:"Predict where it lands",prClick:"Click the grid where the new point lands.",
+ prQ1:"Dilate P{p} by k = {k}. Where is P′?",prQ2:"Dilate P{p} by k = {k}, then translate {t}. Where is P″?",
+ itemOf:"Question {i} of {n}",pickFirst:"Click a point on the grid first.",
+ prOk:"Yes! The new point is {a}.",prHint:"Not yet. Hint: {h} Try again.",prReveal:"The answer is {a}. Look at the orange point.",
+ hintMult:"multiply x by {k} and y by {k}.",hintTwo:"first multiply by {k}, then slide.",
+ next:"Next",finish:"Finish",done:"Practice complete!",score:"You got {n} of {m} on the first try.",again:"Play again",
+ right6up2:"6 right and 2 up",left5:"5 left",up4:"4 up",
+ reTitle:"Dilations in real life",reHelp:"Choose the best answer. These connect to the Dilation Lab stations.",
+ yes:"Correct!",nope:"Not quite.",reDone:"Real life: {n} of {m} correct.",labNext:"Next: try the Dilation Lab with real objects.",
+ r1:"🖨️ A copy machine is set to 200%. What is the scale factor?",r1a:"k = 2",r1b:"k = 0.5",r1c:"k = 200",r1d:"k = 20",r1w:"200% means 2 times as big, so k = 2.",
+ r2:"📱 You shrink a photo to 50% of its size. What kind of dilation is it?",r2a:"Enlargement, k = 5",r2b:"Reduction, k = 0.5",r2c:"Reduction, k = 50",r2d:"Not a dilation",r2w:"50% = 0.5. Because 0.5 is less than 1, it is a reduction.",
+ r3:"🔦 You move a shadow puppet closer to the flashlight. What happens to the shadow?",r3a:"It gets bigger.",r3b:"It gets smaller.",r3c:"It stays the same size.",r3d:"It changes shape.",r3w:"Closer to the light (the center) makes a bigger shadow: k gets bigger.",
+ r4:"👁️ An eye doctor “dilates” your pupils. Which sentence is true?",r4a:"The pupil gets bigger and stays a circle.",r4b:"The pupil turns into a square.",r4c:"The pupil moves to the left.",r4d:"The pupil gets smaller.",r4w:"A dilation changes the size, not the shape. The circle just gets bigger.",
+ r5:"🖼️ A 4 in × 6 in photo is printed as 8 in × 12 in. What is k?",r5a:"k = 2",r5b:"k = 4",r5c:"k = 0.5",r5d:"k = 6",r5w:"8 ÷ 4 = 2 and 12 ÷ 6 = 2. Both sides doubled, so k = 2.",
+ r6:"🛹 A skateboard rolls 3 meters to the right. Is that a dilation?",r6a:"No. Same size, it only moved. That is a translation.",r6b:"Yes, k = 3.",r6c:"Yes, it is an enlargement.",r6d:"Yes, it is a reduction.",r6w:"The size did not change, so it is not a dilation. It is a translation."
+},
+es:{
+ title:"Estación de Dilataciones",sub:"Agrándala. Redúcela. Encuentra el factor de escala.",
+ name:"Tu nombre",period:"Período",newStudent:"Nuevo estudiante",stars:"Estrellas",
+ nudge:"Escribe tu nombre arriba para que tu maestro vea tu trabajo.",
+ tabExplore:"Explorar",tabRules:"Reglas",tabPredict:"Predecir",tabReal:"Vida real",
+ legendPre:"preimagen",legendImg:"imagen",legendRay:"líneas desde el centro (0, 0)",
+ exTitle:"Cambia el factor de escala",exHelp:"Elige una figura. Mueve la barra para cambiar k. Mira cómo la imagen anaranjada crece y se reduce desde el centro (0, 0).",
+ shTri:"Triángulo",shRect:"Rectángulo",shTrap:"Trapecio",
+ thPre:"Preimagen",thRule:"× k",thImg:"Imagen",
+ enlTag:"Ampliación: k > 1",redTag:"Reducción: 0 < k < 1",sameTag:"Mismo tamaño: k = 1",
+ ratio:"Lado de abajo: preimagen {a} unidades, imagen {b} unidades. {b} ÷ {a} = {k}",
+ noticeQ:"¿Qué notas?",noticeFrame:"Prueba: “Cuando k es ____, la imagen es ____. La forma ____.”",send:"Enviar",sent:"¡Enviado! Buen razonamiento.",writeFirst:"Escribe una oración primero.",
+ ruTitle:"La regla de la dilatación",ruHelp:"Si no dan el centro, el centro de dilatación es el origen (0, 0).",
+ ruMult:"Multiplica x por k Y multiplica y por k.",enl:"Ampliación: la imagen es más grande.",red:"Reducción: la imagen es más pequeña.",same:"Mismo tamaño: nada cambia.",
+ ruOrigin:"Recuerda: las traslaciones SUMAN. Las dilataciones MULTIPLICAN.",
+ tryIt:"Inténtalo",tryQ:"Dilata {p} con k = {k}.",check:"Revisar",ok:"¡Correcto!",no:"Todavía no. Multiplica los dos números por {k}.",
+ prTitle:"Predice dónde cae",prClick:"Haz clic en la cuadrícula donde cae el punto nuevo.",
+ prQ1:"Dilata P{p} con k = {k}. ¿Dónde está P′?",prQ2:"Dilata P{p} con k = {k} y luego trasládalo {t}. ¿Dónde está P″?",
+ itemOf:"Pregunta {i} de {n}",pickFirst:"Primero haz clic en un punto de la cuadrícula.",
+ prOk:"¡Sí! El punto nuevo es {a}.",prHint:"Todavía no. Pista: {h} Inténtalo otra vez.",prReveal:"La respuesta es {a}. Mira el punto anaranjado.",
+ hintMult:"multiplica x por {k} y y por {k}.",hintTwo:"primero multiplica por {k} y después desliza.",
+ next:"Siguiente",finish:"Terminar",done:"¡Práctica completa!",score:"Acertaste {n} de {m} al primer intento.",again:"Jugar otra vez",
+ right6up2:"6 a la derecha y 2 hacia arriba",left5:"5 a la izquierda",up4:"4 hacia arriba",
+ reTitle:"Dilataciones en la vida real",reHelp:"Elige la mejor respuesta. Se conectan con las estaciones del laboratorio.",
+ yes:"¡Correcto!",nope:"No exactamente.",reDone:"Vida real: {n} de {m} correctas.",labNext:"Siguiente: haz el Laboratorio de dilataciones con objetos reales.",
+ r1:"🖨️ Una copiadora está en 200%. ¿Cuál es el factor de escala?",r1a:"k = 2",r1b:"k = 0.5",r1c:"k = 200",r1d:"k = 20",r1w:"200% significa 2 veces más grande, así que k = 2.",
+ r2:"📱 Reduces una foto al 50% de su tamaño. ¿Qué tipo de dilatación es?",r2a:"Ampliación, k = 5",r2b:"Reducción, k = 0.5",r2c:"Reducción, k = 50",r2d:"No es una dilatación",r2w:"50% = 0.5. Como 0.5 es menor que 1, es una reducción.",
+ r3:"🔦 Acercas una figura de sombra a la linterna. ¿Qué le pasa a la sombra?",r3a:"Se hace más grande.",r3b:"Se hace más pequeña.",r3c:"Se queda del mismo tamaño.",r3d:"Cambia de forma.",r3w:"Más cerca de la luz (el centro) da una sombra más grande: k aumenta.",
+ r4:"👁️ El oculista te “dilata” las pupilas. ¿Qué oración es verdadera?",r4a:"La pupila se hace más grande y sigue siendo un círculo.",r4b:"La pupila se convierte en un cuadrado.",r4c:"La pupila se mueve a la izquierda.",r4d:"La pupila se hace más pequeña.",r4w:"Una dilatación cambia el tamaño, no la forma. El círculo solo crece.",
+ r5:"🖼️ Una foto de 4 × 6 pulgadas se imprime de 8 × 12 pulgadas. ¿Cuál es k?",r5a:"k = 2",r5b:"k = 4",r5c:"k = 0.5",r5d:"k = 6",r5w:"8 ÷ 4 = 2 y 12 ÷ 6 = 2. Los dos lados se duplicaron, así que k = 2.",
+ r6:"🛹 Una patineta rueda 3 metros a la derecha. ¿Es una dilatación?",r6a:"No. Mismo tamaño, solo se movió. Es una traslación.",r6b:"Sí, k = 3.",r6c:"Sí, es una ampliación.",r6d:"Sí, es una reducción.",r6w:"El tamaño no cambió, así que no es una dilatación. Es una traslación."
+}};
+let LANG="en";
+try{LANG=localStorage.getItem("dil_lang")||"en";}catch(e){}
+function T(k,v){let s=(STR[LANG]&&STR[LANG][k])||STR.en[k]||k;if(v)for(const x in v)s=s.split("{"+x+"}").join(v[x]);return s;}
+const fmt=(n)=>{const r=Math.round(n*1000)/1000;return String(r).replace("-","−");};
+const pt=(p)=>"("+fmt(p[0])+", "+fmt(p[1])+")";
+
+/* ---------- Coordinate plane ---------- */
+const S=480,R=10,U=S/(2*R+2); // 22 units across incl margin
+const X=(x)=>(x+R+1)*U, Y=(y)=>(R+1-y)*U;
+function drawGrid(svg){
+  let h="";
+  for(let i=-R;i<=R;i++){h+=`<line x1="${X(i)}" y1="${Y(R)}" x2="${X(i)}" y2="${Y(-R)}" stroke="var(--gridline)" stroke-width="1"/>`;h+=`<line x1="${X(-R)}" y1="${Y(i)}" x2="${X(R)}" y2="${Y(i)}" stroke="var(--gridline)" stroke-width="1"/>`;}
+  h+=`<line x1="${X(-R)}" y1="${Y(0)}" x2="${X(R)}" y2="${Y(0)}" stroke="var(--axis)" stroke-width="2"/><line x1="${X(0)}" y1="${Y(R)}" x2="${X(0)}" y2="${Y(-R)}" stroke="var(--axis)" stroke-width="2"/>`;
+  for(let i=-R;i<=R;i+=2){if(!i)continue;h+=`<text x="${X(i)}" y="${Y(0)+15}" font-size="11" text-anchor="middle" fill="var(--muted)">${fmt(i)}</text><text x="${X(0)-6}" y="${Y(i)+4}" font-size="11" text-anchor="end" fill="var(--muted)">${fmt(i)}</text>`;}
+  h+=`<text x="${X(R)+6}" y="${Y(0)+4}" font-size="13" font-style="italic" fill="var(--ink)">x</text><text x="${X(0)+6}" y="${Y(R)-2}" font-size="13" font-style="italic" fill="var(--ink)">y</text>`;
+  return h;
+}
+function poly(pts,color,dash){return `<polygon points="${pts.map(p=>X(p[0])+","+Y(p[1])).join(" ")}" fill="${color}" fill-opacity=".18" stroke="${color}" stroke-width="3" ${dash?'stroke-dasharray="6 5"':""}/>`;}
+function dot(p,color,label,dx,dy){return `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="5" fill="${color}"/>`+(label?`<text x="${X(p[0])+(dx||8)}" y="${Y(p[1])+(dy||-8)}" font-size="14" font-weight="700" fill="${color}">${label}</text>`:"");}
+
+/* ---------- Explore ---------- */
+const SHAPES={
+ tri:{key:"shTri",pts:[[1,1],[3,1],[1,3]],labels:["A","B","C"]},
+ rect:{key:"shRect",pts:[[-4,-2],[-4,4],[4,4],[4,-2]],labels:["W","X","Y","Z"]},
+ trap:{key:"shTrap",pts:[[-2,-1],[-1,1],[0,1],[0,-1]],labels:["A","B","C","D"]},
+};
+const KVALS=[0.25,0.5,0.75,1,1.5,2,2.5,3,3.5,4,5];
+let exShape="tri",exK=2;const triedK=new Set();
+function renderShapeBtns(){
+  const box=document.getElementById("shapeBtns");box.innerHTML="";
+  for(const id in SHAPES){const b=document.createElement("button");b.textContent=T(SHAPES[id].key);b.setAttribute("aria-pressed",id===exShape);b.onclick=()=>{exShape=id;renderShapeBtns();renderExplore();log("shape",{section:"explore",item:id});};box.appendChild(b);}
+}
+function renderExplore(){
+  const sh=SHAPES[exShape],img=sh.pts.map(p=>[p[0]*exK,p[1]*exK]);
+  let h=drawGrid();
+  // rays to farthest of pre/img, clipped to grid
+  sh.pts.forEach((p,i)=>{const q=exK>=1?img[i]:p;const m=Math.max(Math.abs(q[0]),Math.abs(q[1]));const s=m>R?R/m:1;h+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(q[0]*s)}" y2="${Y(q[1]*s)}" stroke="var(--muted)" stroke-width="1.3" stroke-dasharray="4 4"/>`;});
+  h+=poly(sh.pts,"var(--blue)")+poly(img,"var(--orange)");
+  sh.pts.forEach((p,i)=>h+=dot(p,"var(--blue)",sh.labels[i],-16,-6));
+  img.forEach((p,i)=>{if(Math.abs(p[0])<=R&&Math.abs(p[1])<=R)h+=dot(p,"var(--orange)",sh.labels[i]+"′",8,-8);});
+  h+=`<circle cx="${X(0)}" cy="${Y(0)}" r="5" fill="var(--ink)"/>`;
+  document.getElementById("exPlane").innerHTML=h;
+  document.getElementById("kOut").textContent=fmt(exK);
+  const tag=document.getElementById("kType");
+  tag.className="pill "+(exK>1?"enl":exK<1?"red":"same");tag.textContent=T(exK>1?"enlTag":exK<1?"redTag":"sameTag");
+  document.getElementById("exTable").innerHTML=sh.pts.map((p,i)=>`<tr><td class="pre">${sh.labels[i]}${pt(p)}</td><td>(${fmt(exK)}·${fmt(p[0])}, ${fmt(exK)}·${fmt(p[1])})</td><td class="img">${sh.labels[i]}′${pt(img[i])}</td></tr>`).join("");
+  const a=Math.hypot(sh.pts[1][0]-sh.pts[0][0],sh.pts[1][1]-sh.pts[0][1]);
+  document.getElementById("sideRatio").textContent=T("ratio",{a:fmt(a),b:fmt(a*exK),k:fmt(exK)});
+}
+document.getElementById("kRange").addEventListener("input",(e)=>{exK=KVALS[+e.target.value];renderExplore();});
+document.getElementById("kRange").addEventListener("change",()=>{const key=exShape+":"+exK;if(!triedK.has(key)){triedK.add(key);log("try-k",{section:"explore",item:key});}});
+document.getElementById("noticeSend").onclick=()=>{const t=document.getElementById("noticeTxt").value.trim();const fb=document.getElementById("noticeFb");if(!t){fb.className="fb no";fb.textContent=T("writeFirst");return;}fb.className="fb ok";fb.textContent=T("sent");addStars(1);log("notice",{section:"explore",text:t,stars:1});};
+
+/* ---------- Rules: try it ---------- */
+const TRIES=[{p:[3,4],k:2},{p:[-6,8],k:0.5},{p:[2,-1],k:3},{p:[-9,-3],k:1/3}];
+const kLabel=(k)=>Math.abs(k-1/3)<1e-9?"1/3":fmt(k);
+function renderTries(){
+  const box=document.getElementById("tryList");box.innerHTML="";
+  TRIES.forEach((q,i)=>{
+    const d=document.createElement("div");d.className="try";
+    d.innerHTML=`<span><b>${i+1}.</b> ${T("tryQ",{p:pt(q.p),k:kLabel(q.k)})}</span> <span>( <input aria-label="x" inputmode="decimal"> , <input aria-label="y" inputmode="decimal"> )</span> <button class="btn">${T("check")}</button> <span class="fb"></span>`;
+    const [ix,iy]=d.querySelectorAll("input"),btn=d.querySelector("button"),fb=d.querySelector(".fb");
+    let tries=0,solved=false;
+    btn.onclick=()=>{if(solved)return;tries++;const num=(s)=>parseFloat(String(s).replace("−","-").replace(",","."));const ok=Math.abs(num(ix.value)-q.p[0]*q.k)<1e-6&&Math.abs(num(iy.value)-q.p[1]*q.k)<1e-6;
+      fb.className="fb "+(ok?"ok":"no");fb.textContent=ok?T("ok"):T("no",{k:kLabel(q.k)});
+      const st=ok&&tries===1?1:0;if(ok){solved=true;addStars(st);}
+      log("rule-try",{section:"rules",item:i+1,correct:ok,stars:st,text:`(${ix.value}, ${iy.value})`});};
+    box.appendChild(d);
+  });
+}
+
+/* ---------- Predict ---------- */
+const PRED=[
+ {p:[2,3],k:2},{p:[-4,2],k:0.5},{p:[1,-2],k:3},{p:[-6,-9],k:1/3},{p:[8,-4],k:0.25},
+ {p:[-2,1],k:2,t:[6,2],tk:"right6up2"},{p:[3,1],k:2,t:[-5,0],tk:"left5"},{p:[3,-2],k:2,t:[0,4],tk:"up4"}
+];
+let pi=0,pick=null,firstTry=true,prScore=0,prAttempts=0,prDone=false;
+const ans=(q)=>{let a=[q.p[0]*q.k,q.p[1]*q.k];if(q.t)a=[a[0]+q.t[0],a[1]+q.t[1]];return a.map(v=>Math.round(v*1e6)/1e6);};
+function renderPredict(reveal){
+  const q=PRED[pi];let h=drawGrid();
+  h+=dot(q.p,"var(--blue)","P");
+  if(pick)h+=`<circle cx="${X(pick[0])}" cy="${Y(pick[1])}" r="7" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`;
+  if(reveal){const a=ans(q);if(q.t){const m=[q.p[0]*q.k,q.p[1]*q.k];h+=dot(m,"var(--muted)","P′");h+=`<line x1="${X(m[0])}" y1="${Y(m[1])}" x2="${X(a[0])}" y2="${Y(a[1])}" stroke="var(--green)" stroke-width="2" marker-end="url(#arr)"/>`;}
+    h+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(q.t?q.p[0]*q.k:a[0])}" y2="${Y(q.t?q.p[1]*q.k:a[1])}" stroke="var(--muted)" stroke-dasharray="4 4"/>`+dot(a,"var(--orange)",q.t?"P″":"P′");}
+  h=`<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--green)"/></marker></defs>`+h;
+  document.getElementById("prPlane").innerHTML=h;
+  document.getElementById("prProg").textContent=T("itemOf",{i:pi+1,n:PRED.length});
+  document.getElementById("prQ").textContent=q.t?T("prQ2",{p:pt(q.p),k:kLabel(q.k),t:T(q.tk)}):T("prQ1",{p:pt(q.p),k:kLabel(q.k)});
+}
+document.getElementById("prPlane").addEventListener("click",(e)=>{
+  if(prDone||!document.getElementById("prNext").hidden)return;
+  const svg=e.currentTarget,r=svg.getBoundingClientRect();
+  const sx=(e.clientX-r.left)*S/r.width,sy=(e.clientY-r.top)*S/r.height;
+  const x=Math.round(sx/U-R-1),y=Math.round(R+1-sy/U);
+  if(Math.abs(x)>R||Math.abs(y)>R)return;
+  pick=[x,y];renderPredict(false);
+});
+document.getElementById("prCheck").onclick=()=>{
+  const fb=document.getElementById("prFb");
+  if(!pick){fb.className="fb no";fb.textContent=T("pickFirst");return;}
+  const q=PRED[pi],a=ans(q),ok=pick[0]===a[0]&&pick[1]===a[1];prAttempts++;
+  const st=ok&&firstTry?1:0;
+  log("predict",{section:"predict",item:pi+1,correct:ok,stars:st,text:pt(pick)});
+  if(ok){if(firstTry)prScore++;addStars(st);fb.className="fb ok";fb.textContent=T("prOk",{a:pt(a)});renderPredict(true);endItem();}
+  else if(prAttempts<2){firstTry=false;fb.className="fb no";fb.textContent=T("prHint",{h:q.t?T("hintTwo",{k:kLabel(q.k)}):T("hintMult",{k:kLabel(q.k)})});}
+  else{fb.className="fb no";fb.textContent=T("prReveal",{a:pt(a)});renderPredict(true);endItem();}
+};
+function endItem(){document.getElementById("prCheck").hidden=true;const n=document.getElementById("prNext");n.hidden=false;n.textContent=pi===PRED.length-1?T("finish"):T("next");}
+document.getElementById("prNext").onclick=()=>{
+  if(pi===PRED.length-1){prDone=true;log("predict-done",{section:"predict",item:"score",correct:prScore+"/"+PRED.length});showPrDone();return;}
+  pi++;pick=null;firstTry=true;prAttempts=0;document.getElementById("prFb").textContent="";document.getElementById("prCheck").hidden=false;document.getElementById("prNext").hidden=true;renderPredict(false);
+};
+function showPrDone(){
+  document.getElementById("prPanel").innerHTML=`<div class="done"><div class="big">🎉</div><h2>${T("done")}</h2><p>${T("score",{n:prScore,m:PRED.length})}</p><button class="btn primary" id="prAgain">${T("again")}</button></div>`;
+  document.getElementById("prAgain").onclick=()=>location.reload();
+}
+
+/* ---------- Real life ---------- */
+const REAL=[["r1","a"],["r2","b"],["r3","a"],["r4","a"],["r5","a"],["r6","a"]];
+let ri=0,reScore=0;const order={};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function renderReal(){
+  const panel=document.getElementById("rePanel");
+  if(ri>=REAL.length){panel.innerHTML=`<div class="done"><div class="big">🌟</div><h2>${T("reDone",{n:reScore,m:REAL.length})}</h2><p>${T("labNext")}</p></div>`;return;}
+  const [k,right]=REAL[ri];order[k]=order[k]||shuffle(["a","b","c","d"]);
+  panel.innerHTML=`<p class="progress">${T("itemOf",{i:ri+1,n:REAL.length})}</p><p class="q">${T(k)}</p><div class="opts">${order[k].map(o=>`<button data-o="${o}">${T(k+o)}</button>`).join("")}</div><div id="reFb"></div>`;
+  panel.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>{
+    const ok=b.dataset.o===right;
+    panel.querySelectorAll(".opts button").forEach(x=>{x.disabled=true;if(x.dataset.o===right)x.classList.add("right");});
+    if(!ok)b.classList.add("wrong");
+    if(ok){reScore++;addStars(1);}
+    log("real",{section:"real",item:ri+1,correct:ok,stars:ok?1:0,text:T(k+b.dataset.o)});
+    document.getElementById("reFb").innerHTML=`<div class="fb ${ok?"ok":"no"}">${ok?T("yes"):T("nope")}</div><div class="why">${T(k+"w")}</div><p><button class="btn primary" id="reNext">${ri===REAL.length-1?T("finish"):T("next")}</button></p>`;
+    document.getElementById("reNext").onclick=()=>{ri++;if(ri>=REAL.length)log("real-done",{section:"real",item:"score",correct:reScore+"/"+REAL.length});renderReal();};
+  });
+}
+
+/* ---------- Stars, tabs, identity, language ---------- */
+let stars=0;
+function addStars(n){if(!n)return;stars+=n;document.getElementById("starCount").textContent=stars;}
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  ["explore","rules","predict","real"].forEach(id=>document.getElementById(id).hidden=id!==b.dataset.tab);
+  log("tab",{section:b.dataset.tab});
+});
+const nameEl=document.getElementById("name"),perEl=document.getElementById("period");
+nameEl.value=ID.name;perEl.value=ID.period;
+let startLogged=false;
+function saveId(){ID.name=nameEl.value;ID.period=perEl.value;try{localStorage.setItem("dil_student",ID.name);localStorage.setItem("dil_period",ID.period);}catch(e){}if(!startLogged&&ID.name.trim()&&ID.period.trim()){startLogged=true;log("start",{section:"app"});}}
+nameEl.addEventListener("change",saveId);perEl.addEventListener("change",saveId);
+document.getElementById("newStudent").onclick=()=>{try{localStorage.removeItem("dil_student");localStorage.removeItem("dil_period");}catch(e){}location.reload();};
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll("[data-t]").forEach(el=>el.textContent=T(el.dataset.t));
+  document.getElementById("lang-en").setAttribute("aria-pressed",LANG==="en");
+  document.getElementById("lang-es").setAttribute("aria-pressed",LANG==="es");
+  document.getElementById("name").placeholder=T("name");
+  renderShapeBtns();renderExplore();renderTries();
+  if(!prDone){renderPredict(!document.getElementById("prNext").hidden);if(!document.getElementById("prNext").hidden)endItem();}
+  renderReal();
+}
+document.getElementById("lang-en").onclick=()=>{LANG="en";try{localStorage.setItem("dil_lang",LANG);}catch(e){}applyLang();log("lang",{section:"app",item:"en"});};
+document.getElementById("lang-es").onclick=()=>{LANG="es";try{localStorage.setItem("dil_lang",LANG);}catch(e){}applyLang();log("lang",{section:"app",item:"es"});};
+applyLang();
+if(ID.name.trim()){startLogged=true;log("start",{section:"app"});}
+</script>
+</body>
+</html>
